@@ -102,7 +102,7 @@ int main(int a_argc, char* a_argv[])
       return 1;
     }
 
-    // Check if the image mode makes sense fo the image data
+    // Check if the image mode makes sense for the image data
     if (n < 4 &&
         mode != ImageMode::Additive)
     {

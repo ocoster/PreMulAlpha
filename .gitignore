@@ -26,3 +26,5 @@
 *.exe
 *.out
 *.app
+BlendProcess/.vs/
+BlendProcess/x64/
