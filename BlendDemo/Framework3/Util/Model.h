@@ -54,6 +54,7 @@ public:
 
 	// Utility functions
 	void createSphere(const int subDivLevel);
+  void createIsoSphere(const int subDivLevel);
 
 	StreamID findStream(const AttributeType type, const uint index = 0) const;
 	const Stream &getStream(const StreamID stream) const { return streams[stream]; }

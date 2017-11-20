@@ -21,7 +21,7 @@
 
 #include "Model.h"
 #include "Tokenizer.h"
-
+#include <algorithm>
 #include "Hash.h"
 
 Model::Model(){
@@ -80,6 +80,69 @@ void Model::createSphere(const int subDivLevel){
 	subDivide(dest, py1, px0, pz1, subDivLevel);
 	subDivide(dest, py1, pz1, px1, subDivLevel);
 	subDivide(dest, py1, px1, pz0, subDivLevel);
+
+	ASSERT(dest - vertices == nVertices);
+
+	addStream(TYPE_VERTEX, 3, nVertices, (float *) vertices, NULL, false);
+	nIndices = nVertices;
+	addBatch(0, nVertices);
+}
+
+void Model::createIsoSphere(const int subDivLevel){
+
+  // Code from http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
+	const int nVertices = 20 * 3 * (1 << (2 * subDivLevel));
+
+	float3 *vertices = new float3[nVertices];
+
+  // create 12 vertices of a icosahedron
+  float t = (1.0f + sqrt(5.0f)) / 2.0f;
+
+  float3 points[12] = {
+    normalize(float3(-1, t, 0)),
+    normalize(float3(1, t, 0)),
+    normalize(float3(-1, -t, 0)),
+    normalize(float3(1, -t, 0)),
+
+    normalize(float3(0, -1, t)),
+    normalize(float3(0, 1, t)),
+    normalize(float3(0, -1, -t)),
+    normalize(float3(0, 1, -t)),
+
+    normalize(float3(t, 0, -1)),
+    normalize(float3(t, 0, 1)),
+    normalize(float3(-t, 0, -1)),
+    normalize(float3(-t, 0, 1)) };
+
+	float3 *dest = vertices;
+
+  // 5 faces around point 0
+  subDivide(dest, points[0], points[11], points[5], subDivLevel);
+  subDivide(dest, points[0], points[5],  points[1], subDivLevel);
+  subDivide(dest, points[0], points[1],  points[7], subDivLevel);
+  subDivide(dest, points[0], points[7],  points[10], subDivLevel);
+  subDivide(dest, points[0], points[10], points[11], subDivLevel);
+
+  // 5 adjacent faces 
+  subDivide(dest, points[1],  points[5],  points[9], subDivLevel);
+  subDivide(dest, points[5],  points[11], points[4], subDivLevel);
+  subDivide(dest, points[11], points[10], points[2], subDivLevel);
+  subDivide(dest, points[10], points[7],  points[6], subDivLevel);
+  subDivide(dest, points[7],  points[1],  points[8], subDivLevel);
+
+  // 5 faces around point 3
+  subDivide(dest, points[3], points[9], points[4], subDivLevel);
+  subDivide(dest, points[3], points[4], points[2], subDivLevel);
+  subDivide(dest, points[3], points[2], points[6], subDivLevel);
+  subDivide(dest, points[3], points[6], points[8], subDivLevel);
+  subDivide(dest, points[3], points[8], points[9], subDivLevel);
+
+  // 5 adjacent faces 
+  subDivide(dest, points[4], points[9], points[5], subDivLevel);
+  subDivide(dest, points[2], points[4], points[11], subDivLevel);
+  subDivide(dest, points[6], points[2], points[10], subDivLevel);
+  subDivide(dest, points[8], points[6], points[7], subDivLevel);
+  subDivide(dest, points[9], points[8], points[1], subDivLevel);
 
 	ASSERT(dest - vertices == nVertices);
 
@@ -1189,7 +1252,8 @@ restart:
 		}
 	}
 
-	triangles.sort(compareTriangles);
+	//triangles.sort(compareTriangles);
+  std::sort(triangles.getArray(), triangles.getArray() + triangles.getCount(), compareTriangles);
 
 	nIndices = 3 * triangles.getCount();
 
