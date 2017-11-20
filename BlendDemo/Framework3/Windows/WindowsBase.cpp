@@ -277,7 +277,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hLastInst, LPSTR lpszCmdLine, 
 					//TranslateMessage(&msg);
 					DispatchMessage(&msg);
 				}
-				if (msg.message == WM_QUIT) break;
+				if (msg.message == WM_QUIT || app->isDone()) break;
 
 				if (active){
 					/*

@@ -28,3 +28,7 @@
 *.app
 BlendProcess/.vs/
 BlendProcess/x64/
+BlendDemo/BlendDemo/Debug/
+BlendDemo/BlendDemo/.vs/
+BlendDemo/BlendDemo/BlendDemo_d.pdb
+BlendDemo/BlendDemo/BlendDemo_d.ilk
