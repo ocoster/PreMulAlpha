@@ -13,9 +13,9 @@ public:
   char *getTitle() const override { return "Blend Demo"; }
   bool init() override;
 
-	bool onKey(const uint key, const bool pressed) override;
+  bool onKey(const uint key, const bool pressed) override;
   bool onMouseButton(const int x, const int y, const MouseButton button, const bool pressed) override;
-	bool onMouseMove(const int x, const int y, const int deltaX, const int deltaY) override;
+  bool onMouseMove(const int x, const int y, const int deltaX, const int deltaY) override;
 
   bool load() override;
 
