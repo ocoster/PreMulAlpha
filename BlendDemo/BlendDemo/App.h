@@ -26,6 +26,8 @@ protected:
   mat4 m_projection; //!< The projection matrix used
   SamplerStateID trilinearClamp, trilinearAniso, radialFilter;
 
+  int32_t m_divPos = 0;
+
   //TextureID m_perlin; 
   //ShaderID m_gridDraw;
 }; 

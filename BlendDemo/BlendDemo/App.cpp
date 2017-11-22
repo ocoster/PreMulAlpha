@@ -18,9 +18,6 @@ extern long g_allocFreeCount;
 BaseApp *CreateApp() { return new App(); }
 
 bool s_mouseLeftDown = false;
-bool s_mouseRightDown = false;
-int32_t s_mouseDownX = 0;
-int32_t s_mouseDownY = 0;
 
 App::App()
 {
@@ -58,6 +55,9 @@ bool App::load()
   //if ((m_perlin = renderer->addTexture("Perlin.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
   //if ((m_gridDraw = renderer->addShader("gridDraw.shd")) == SHADER_NONE) return false;
 
+
+  m_divPos = width / 2;
+
   return true;
 }
 
@@ -66,25 +66,16 @@ bool App::onMouseButton(const int x, const int y, const MouseButton button, cons
   if (button == MOUSE_LEFT)
   {
     s_mouseLeftDown = pressed;
-    s_mouseDownX = x;
-    s_mouseDownY = y;
-  }
-  if (button == MOUSE_RIGHT)
-  {
-    s_mouseRightDown = pressed;
-    s_mouseDownX = x;
-    s_mouseDownY = y;
+    m_divPos = x;
   }
   return OpenGLApp::onMouseButton(x, y, button, pressed);
 }
 
 bool App::onMouseMove(const int x, const int y, const int deltaX, const int deltaY)
 {
-  if (s_mouseLeftDown ||
-      s_mouseRightDown)
+  if (s_mouseLeftDown)
   {
-    s_mouseDownX = x;
-    s_mouseDownY = y;
+    m_divPos = x;
   }
   return OpenGLApp::onMouseMove(x, y, deltaX, deltaY);
 }
@@ -118,6 +109,8 @@ void FillBlockPixel(uint32_t a_x, uint32_t a_y, uint32_t a_pixelSize)
 
 void App::drawFrame()
 {
+  // Update the PFX
+
   mat4 modelview = scale(1.0f, 1.0f, -1.0f) * rotateXY(-wx, -wy) * translate(-camPos) * rotateX(PI * 0.5f);
 
   glMatrixMode(GL_PROJECTION);
@@ -129,9 +122,33 @@ void App::drawFrame()
   float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
   renderer->clear(true, true, false, clearColor);
 
-  renderer->setup2DMode(0, (float) width, 0, (float) height);
 
-  // Draw text data to the screen 
+  // Draw the background
+
+  // Draw the pre-mul alpha
+    // Setup scissor
+
+  // Draw the traditional blending
+    // Setup scissor
+
+
+  // Reset the scissor
+
+  // Draw the dividing line
+  renderer->reset();
+  renderer->setup2DMode(0, (float)width, 0, (float)height);
+  renderer->apply();
+  glBegin(GL_QUADS);
+    glColor3f(0.5f, 0.5f, 0.5f);
+    glVertex2i(m_divPos - 2, 0);
+    glVertex2i(m_divPos + 4, 0);
+    glVertex2i(m_divPos + 4, height);
+    glVertex2i(m_divPos - 2, height);
+  glEnd();
+
+  // Draw the draw call counts
+
+
   renderer->reset();
   //renderer->setShader(m_gridDraw);
   //renderer->setTexture("perlinTex", m_perlin);
