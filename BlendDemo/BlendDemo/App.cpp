@@ -38,7 +38,8 @@ void App::Particle::Reset()
 
   m_direction = vec2(RandomFloat(-2.0f, 2.0f), RandomFloat(2.0f, 3.0f));
   m_alphaDelta = RandomFloat(-0.1f, -0.05f);
-
+  m_sizeDelta = RandomFloat(0.0f, 0.5f);
+  m_rotationDelta = RandomFloat(-0.5f, 0.5f);
 }
 
 App::App()
@@ -47,7 +48,7 @@ App::App()
 
 bool App::init()
 {
-  m_particles.resize(300);
+  m_particles.resize(100);
 
   // Age the pfx system for the first draw
   for (uint32_t i = 0; i < 1000; i++)
@@ -144,6 +145,8 @@ void App::updatePFX(float i_delta)
   {
     p.m_position += p.m_direction * i_delta;
     p.m_alpha += p.m_alphaDelta * i_delta;
+    p.m_size += p.m_sizeDelta * i_delta;
+    p.m_rotation += p.m_rotationDelta * i_delta;
 
     if (p.m_alpha <= 0.0f)
     {
@@ -182,15 +185,19 @@ void App::drawFrame()
 
   renderer->reset();
   renderer->setup2DMode(-50.0f, 50.0f, (float)height / (float)width * 100.0f, 0.0f);
+  renderer->setBlendState(blendSrcAlpha);
   renderer->apply();
   glBegin(GL_QUADS);
-  glColor3f(1.0f, 1.0f, 0.0f);
   for (Particle& p : m_particles)
   {
-    glVertex2f(p.m_position.x - p.m_size, p.m_position.y - p.m_size);
-    glVertex2f(p.m_position.x + p.m_size, p.m_position.y - p.m_size);
-    glVertex2f(p.m_position.x + p.m_size, p.m_position.y + p.m_size);
-    glVertex2f(p.m_position.x - p.m_size, p.m_position.y + p.m_size);
+    vec2 offset1 = vec2(cosf(p.m_rotation), sinf(p.m_rotation)) * p.m_size;
+    vec2 offset2 = vec2(-offset1.y, offset1.x);
+
+    glColor4f(1.0f, 1.0f, 0.0f, p.m_alpha);
+    glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
+    glVertex2fv(value_ptr(p.m_position + offset1 - offset2));
+    glVertex2fv(value_ptr(p.m_position + offset1 + offset2));
+    glVertex2fv(value_ptr(p.m_position - offset1 + offset2));
   }
   glEnd();
 

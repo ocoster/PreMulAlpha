@@ -38,6 +38,9 @@ protected:
 
     vec2 m_direction = vec2(0.0f, 1.0f);
     float m_alphaDelta = 0.1f;
+    float m_sizeDelta = 0.0f;
+    float m_rotationDelta = 0.0f;
+
   };
 
 
