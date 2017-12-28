@@ -19,12 +19,36 @@ BaseApp *CreateApp() { return new App(); }
 
 bool s_mouseLeftDown = false;
 
+
+float RandomFloat(float i_min, float i_max)
+{
+  float random = ((float)rand()) / (float)RAND_MAX;
+
+  float range = i_max - i_min;
+  return (random * range) + i_min;
+}
+
+void App::Particle::Reset()
+{
+  m_position = vec2(0.0f, 0.0f);
+  m_alpha = 1.0f;
+  m_size = 10.0f;
+  m_rotation = 0.0f;
+  m_texType = 0;
+
+  m_direction = vec2(RandomFloat(-0.1f, 0.1f), RandomFloat(0.1f, 0.2f));
+  m_alphaDelta = RandomFloat(-0.2f, -0.1f);
+
+}
+
 App::App()
 {
 }
 
 bool App::init()
 {
+  m_particles.resize(100);
+
   return OpenGLApp::init();
 }
 
@@ -107,9 +131,25 @@ void FillBlockPixel(uint32_t a_x, uint32_t a_y, uint32_t a_pixelSize)
   glVertex2i(a_x, a_y + a_pixelSize);
 }
 
+void App::updatePFX()
+{
+  // Update all particles and reset ones that expire
+  for (Particle& p : m_particles)
+  {
+    p.m_position += p.m_direction * frameTime;
+    p.m_alpha += p.m_alphaDelta * frameTime;
+
+    if (p.m_alpha <= 0.0f)
+    {
+      p.Reset();
+    }
+  }
+}
+
 void App::drawFrame()
 {
   // Update the PFX
+  updatePFX();
 
   mat4 modelview = scale(1.0f, 1.0f, -1.0f) * rotateXY(-wx, -wy) * translate(-camPos) * rotateX(PI * 0.5f);
 

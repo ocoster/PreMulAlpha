@@ -21,17 +21,23 @@ public:
   bool load() override;
 
   void drawFrame() override;
+  void updatePFX();
 
 protected:
 
   struct Particle
   {
+    inline Particle() { Reset(); }
+    void Reset();
+
     vec2 m_position = vec2(0.0f, 0.0f);
-    vec2 m_direction = vec2(0.0f, 1.0f);
     float m_alpha = 0.0f;
     float m_size = 0.0f;
     float m_rotation = 0.0f;
     uint8_t m_texType = 0;
+
+    vec2 m_direction = vec2(0.0f, 1.0f);
+    float m_alphaDelta = 0.1f;
   };
 
 
