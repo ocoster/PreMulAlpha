@@ -21,7 +21,7 @@ public:
   bool load() override;
 
   void drawFrame() override;
-  void updatePFX();
+  void updatePFX(float i_delta);
 
 protected:
 

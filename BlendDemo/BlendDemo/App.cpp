@@ -32,12 +32,12 @@ void App::Particle::Reset()
 {
   m_position = vec2(0.0f, 0.0f);
   m_alpha = 1.0f;
-  m_size = 10.0f;
+  m_size = 1.0f;
   m_rotation = 0.0f;
   m_texType = 0;
 
-  m_direction = vec2(RandomFloat(-0.1f, 0.1f), RandomFloat(0.1f, 0.2f));
-  m_alphaDelta = RandomFloat(-0.2f, -0.1f);
+  m_direction = vec2(RandomFloat(-2.0f, 2.0f), RandomFloat(2.0f, 3.0f));
+  m_alphaDelta = RandomFloat(-0.1f, -0.05f);
 
 }
 
@@ -47,7 +47,13 @@ App::App()
 
 bool App::init()
 {
-  m_particles.resize(100);
+  m_particles.resize(300);
+
+  // Age the pfx system for the first draw
+  for (uint32_t i = 0; i < 1000; i++)
+  {
+    updatePFX(1.0f / 30.0f);
+  }
 
   return OpenGLApp::init();
 }
@@ -131,13 +137,13 @@ void FillBlockPixel(uint32_t a_x, uint32_t a_y, uint32_t a_pixelSize)
   glVertex2i(a_x, a_y + a_pixelSize);
 }
 
-void App::updatePFX()
+void App::updatePFX(float i_delta)
 {
   // Update all particles and reset ones that expire
   for (Particle& p : m_particles)
   {
-    p.m_position += p.m_direction * frameTime;
-    p.m_alpha += p.m_alphaDelta * frameTime;
+    p.m_position += p.m_direction * i_delta;
+    p.m_alpha += p.m_alphaDelta * i_delta;
 
     if (p.m_alpha <= 0.0f)
     {
@@ -149,7 +155,7 @@ void App::updatePFX()
 void App::drawFrame()
 {
   // Update the PFX
-  updatePFX();
+  updatePFX(frameTime);
 
   mat4 modelview = scale(1.0f, 1.0f, -1.0f) * rotateXY(-wx, -wy) * translate(-camPos) * rotateX(PI * 0.5f);
 
@@ -173,6 +179,20 @@ void App::drawFrame()
 
 
   // Reset the scissor
+
+  renderer->reset();
+  renderer->setup2DMode(-50.0f, 50.0f, (float)height / (float)width * 100.0f, 0.0f);
+  renderer->apply();
+  glBegin(GL_QUADS);
+  glColor3f(1.0f, 1.0f, 0.0f);
+  for (Particle& p : m_particles)
+  {
+    glVertex2f(p.m_position.x - p.m_size, p.m_position.y - p.m_size);
+    glVertex2f(p.m_position.x + p.m_size, p.m_position.y - p.m_size);
+    glVertex2f(p.m_position.x + p.m_size, p.m_position.y + p.m_size);
+    glVertex2f(p.m_position.x - p.m_size, p.m_position.y + p.m_size);
+  }
+  glEnd();
 
   // Draw the dividing line
   renderer->reset();
