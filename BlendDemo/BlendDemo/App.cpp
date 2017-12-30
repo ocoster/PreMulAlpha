@@ -83,7 +83,7 @@ bool App::load()
   if ((trilinearAniso = renderer->addSamplerState(TRILINEAR_ANISO, WRAP, WRAP, WRAP)) == SS_NONE) return false;
   if ((radialFilter   = renderer->addSamplerState(LINEAR, WRAP, CLAMP, CLAMP)) == SS_NONE) return false;
 
-  //if ((m_perlin = renderer->addTexture("Perlin.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
+  if ((m_texBackground = renderer->addTexture("Background.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
   //if ((m_gridDraw = renderer->addShader("gridDraw.shd")) == SHADER_NONE) return false;
 
 
@@ -173,6 +173,25 @@ void App::drawFrame()
 
 
   // Draw the background
+  float maxY = (float)height / (float)width * 100.0f;
+  renderer->setup2DMode(-50.0f, 50.0f, maxY, 0.0f);
+  renderer->reset();
+  ((OpenGLRenderer*)renderer)->setTexture(m_texBackground);
+  renderer->apply();
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex2f(-50.0f, maxY);
+
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex2f(50.0f, maxY);
+
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex2f(50.0f, 0.0f);
+
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex2f(-50.0f, 0.0f);
+  glEnd();
 
   // Draw the pre-mul alpha
     // Setup scissor
@@ -184,7 +203,6 @@ void App::drawFrame()
   // Reset the scissor
 
   renderer->reset();
-  renderer->setup2DMode(-50.0f, 50.0f, (float)height / (float)width * 100.0f, 0.0f);
   renderer->setBlendState(blendSrcAlpha);
   renderer->apply();
   glBegin(GL_QUADS);

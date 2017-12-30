@@ -51,6 +51,6 @@ protected:
 
   std::vector<Particle> m_particles; //!< The array of rendre particles
 
-  //TextureID m_perlin; 
+  TextureID m_texBackground; 
   //ShaderID m_gridDraw;
 }; 
