@@ -84,6 +84,11 @@ bool App::load()
   if ((radialFilter   = renderer->addSamplerState(LINEAR, WRAP, CLAMP, CLAMP)) == SS_NONE) return false;
 
   if ((m_texBackground = renderer->addTexture("Background.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
+  
+  if ((m_texAdditve = renderer->addTexture("Additive.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
+  if ((m_texMultiply = renderer->addTexture("Multiply.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
+  if ((m_texBlend = renderer->addTexture("Blend.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
+  
   //if ((m_gridDraw = renderer->addShader("gridDraw.shd")) == SHADER_NONE) return false;
 
 
@@ -204,6 +209,7 @@ void App::drawFrame()
 
   renderer->reset();
   renderer->setBlendState(blendSrcAlpha);
+  ((OpenGLRenderer*)renderer)->setTexture(m_texBlend);
   renderer->apply();
   glBegin(GL_QUADS);
   for (Particle& p : m_particles)
@@ -212,9 +218,16 @@ void App::drawFrame()
     vec2 offset2 = vec2(-offset1.y, offset1.x);
 
     glColor4f(1.0f, 1.0f, 0.0f, p.m_alpha);
+    glTexCoord2f(0.0f, 0.0f);
     glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
+
+    glTexCoord2f(1.0f, 0.0f);
     glVertex2fv(value_ptr(p.m_position + offset1 - offset2));
+
+    glTexCoord2f(1.0f, 1.0f);
     glVertex2fv(value_ptr(p.m_position + offset1 + offset2));
+
+    glTexCoord2f(0.0f, 1.0f);
     glVertex2fv(value_ptr(p.m_position - offset1 + offset2));
   }
   glEnd();

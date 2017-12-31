@@ -52,5 +52,10 @@ protected:
   std::vector<Particle> m_particles; //!< The array of rendre particles
 
   TextureID m_texBackground; 
+
+  TextureID m_texAdditve;
+  TextureID m_texMultiply;
+  TextureID m_texBlend;
+
   //ShaderID m_gridDraw;
 }; 
