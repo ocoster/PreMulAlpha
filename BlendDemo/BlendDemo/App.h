@@ -57,5 +57,9 @@ protected:
   TextureID m_texMultiply;
   TextureID m_texBlend;
 
+  BlendStateID m_blendModeAdditve;
+  BlendStateID m_blendModeMultiply;
+  BlendStateID m_blendModeBlend;
+
   //ShaderID m_gridDraw;
 }; 

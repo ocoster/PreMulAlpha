@@ -89,6 +89,10 @@ bool App::load()
   if ((m_texMultiply = renderer->addTexture("Multiply.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
   if ((m_texBlend = renderer->addTexture("Blend.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
   
+  m_blendModeAdditve = renderer->addBlendState(ONE, ONE);
+  m_blendModeMultiply = renderer->addBlendState(ZERO, ONE_MINUS_SRC_COLOR);
+  m_blendModeBlend = renderer->addBlendState(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
+
   //if ((m_gridDraw = renderer->addShader("gridDraw.shd")) == SHADER_NONE) return false;
 
 
@@ -208,8 +212,13 @@ void App::drawFrame()
   // Reset the scissor
 
   renderer->reset();
-  renderer->setBlendState(blendSrcAlpha);
-  ((OpenGLRenderer*)renderer)->setTexture(m_texBlend);
+  //renderer->setBlendState(m_blendModeBlend);
+  //((OpenGLRenderer*)renderer)->setTexture(m_texBlend);
+  //renderer->setBlendState(m_blendModeAdditve);
+  //((OpenGLRenderer*)renderer)->setTexture(m_texAdditve);
+  renderer->setBlendState(m_blendModeMultiply);
+  ((OpenGLRenderer*)renderer)->setTexture(m_texMultiply);
+
   renderer->apply();
   glBegin(GL_QUADS);
   for (Particle& p : m_particles)
@@ -217,7 +226,8 @@ void App::drawFrame()
     vec2 offset1 = vec2(cosf(p.m_rotation), sinf(p.m_rotation)) * p.m_size;
     vec2 offset2 = vec2(-offset1.y, offset1.x);
 
-    glColor4f(1.0f, 1.0f, 0.0f, p.m_alpha);
+    //glColor4f(1.0f, 1.0f, 1.0f, p.m_alpha);
+    glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
     glTexCoord2f(0.0f, 0.0f);
     glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
 
