@@ -24,6 +24,16 @@ public:
   void updatePFX(float i_delta);
 
 protected:
+  
+  enum class ParticleType : uint8_t
+  {
+    Additive = 0,
+    Multiply,
+    Blend,
+
+    MAX
+  };
+
 
   struct Particle
   {
@@ -34,7 +44,7 @@ protected:
     float m_alpha = 0.0f;
     float m_size = 0.0f;
     float m_rotation = 0.0f;
-    uint8_t m_texType = 0;
+    ParticleType m_type = ParticleType::Additive;
 
     vec2 m_direction = vec2(0.0f, 1.0f);
     float m_alphaDelta = 0.1f;

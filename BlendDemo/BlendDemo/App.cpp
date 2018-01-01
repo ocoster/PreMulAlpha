@@ -20,6 +20,14 @@ BaseApp *CreateApp() { return new App(); }
 bool s_mouseLeftDown = false;
 
 
+int32_t RandomInt(int32_t i_min, int32_t i_max)
+{
+  int32_t range = i_max - i_min;
+  int32_t random = (int32_t)rand() % (range + 1);
+
+  return random + i_min;
+}
+
 float RandomFloat(float i_min, float i_max)
 {
   float random = ((float)rand()) / (float)RAND_MAX;
@@ -34,10 +42,10 @@ void App::Particle::Reset()
   m_alpha = 1.0f;
   m_size = 1.0f;
   m_rotation = 0.0f;
-  m_texType = 0;
+  m_type = (ParticleType)RandomInt(0, (int32_t)ParticleType::MAX - 1);
 
-  m_direction = vec2(RandomFloat(-2.0f, 2.0f), RandomFloat(2.0f, 3.0f));
-  m_alphaDelta = RandomFloat(-0.1f, -0.05f);
+  m_direction = vec2(RandomFloat(-2.0f, 2.0f), RandomFloat(2.0f, 6.0f));
+  m_alphaDelta = RandomFloat(-0.06f, -0.01f);
   m_sizeDelta = RandomFloat(0.0f, 0.5f);
   m_rotationDelta = RandomFloat(-0.5f, 0.5f);
 }
@@ -48,7 +56,7 @@ App::App()
 
 bool App::init()
 {
-  m_particles.resize(100);
+  m_particles.resize(200);
 
   // Age the pfx system for the first draw
   for (uint32_t i = 0; i < 1000; i++)
@@ -211,36 +219,50 @@ void App::drawFrame()
 
   // Reset the scissor
 
-  renderer->reset();
-  //renderer->setBlendState(m_blendModeBlend);
-  //((OpenGLRenderer*)renderer)->setTexture(m_texBlend);
-  //renderer->setBlendState(m_blendModeAdditve);
-  //((OpenGLRenderer*)renderer)->setTexture(m_texAdditve);
-  renderer->setBlendState(m_blendModeMultiply);
-  ((OpenGLRenderer*)renderer)->setTexture(m_texMultiply);
-
-  renderer->apply();
-  glBegin(GL_QUADS);
+  // Render each particle one by one, as the blend mode can change per particle
   for (Particle& p : m_particles)
   {
-    vec2 offset1 = vec2(cosf(p.m_rotation), sinf(p.m_rotation)) * p.m_size;
-    vec2 offset2 = vec2(-offset1.y, offset1.x);
+    // Bind the appropiate blend mode and texture
+    renderer->reset();
+    switch (p.m_type)
+    {
+    case(ParticleType::Additive): 
+      renderer->setBlendState(m_blendModeAdditve);
+      ((OpenGLRenderer*)renderer)->setTexture(m_texAdditve);
+      glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
+      break;
 
-    //glColor4f(1.0f, 1.0f, 1.0f, p.m_alpha);
-    glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
+    case(ParticleType::Multiply): 
+      renderer->setBlendState(m_blendModeMultiply);
+      ((OpenGLRenderer*)renderer)->setTexture(m_texMultiply);
+      glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
+      break;
 
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex2fv(value_ptr(p.m_position + offset1 - offset2));
+    case(ParticleType::Blend): 
+      renderer->setBlendState(m_blendModeBlend);
+      ((OpenGLRenderer*)renderer)->setTexture(m_texBlend);
+      glColor4f(1.0f, 1.0f, 1.0f, p.m_alpha);
+      break;
+    }
+    renderer->apply();
 
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex2fv(value_ptr(p.m_position + offset1 + offset2));
+    glBegin(GL_QUADS);
+      vec2 offset1 = vec2(cosf(p.m_rotation), sinf(p.m_rotation)) * p.m_size;
+      vec2 offset2 = vec2(-offset1.y, offset1.x);
 
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex2fv(value_ptr(p.m_position - offset1 + offset2));
+      glTexCoord2f(0.0f, 0.0f);
+      glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
+
+      glTexCoord2f(1.0f, 0.0f);
+      glVertex2fv(value_ptr(p.m_position + offset1 - offset2));
+
+      glTexCoord2f(1.0f, 1.0f);
+      glVertex2fv(value_ptr(p.m_position + offset1 + offset2));
+
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex2fv(value_ptr(p.m_position - offset1 + offset2));
+    glEnd();
   }
-  glEnd();
 
   // Draw the dividing line
   renderer->reset();
