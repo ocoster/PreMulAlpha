@@ -103,7 +103,6 @@ bool App::load()
 
   //if ((m_gridDraw = renderer->addShader("gridDraw.shd")) == SHADER_NONE) return false;
 
-
   m_divPos = width / 2;
 
   return true;
@@ -126,33 +125,6 @@ bool App::onMouseMove(const int x, const int y, const int deltaX, const int delt
     m_divPos = x;
   }
   return OpenGLApp::onMouseMove(x, y, deltaX, deltaY);
-}
-
-void DrawRoom(uint32_t a_w, uint32_t a_h, uint32_t a_pixelSize)
-{
-  glColor3f(0.0f, 1.0f, 0.0f);
-
-  glBegin(GL_LINES);
-  for (uint32_t i = 0; i <= a_w; i++)
-  {
-    glVertex2i(i * a_pixelSize, 0);
-    glVertex2i(i * a_pixelSize, a_h * a_pixelSize);
-  }
-  for (uint32_t i = 0; i <= a_h; i++)
-  {
-    glVertex2i(0, i * a_pixelSize);
-    glVertex2i(a_w * a_pixelSize, i * a_pixelSize);
-  }
-  glEnd();
-}
-
-void FillBlockPixel(uint32_t a_x, uint32_t a_y, uint32_t a_pixelSize)
-{
-  glVertex2i(a_x, a_y);
-  glVertex2i(a_x + a_pixelSize, a_y);
-
-  glVertex2i(a_x + a_pixelSize, a_y + a_pixelSize);
-  glVertex2i(a_x, a_y + a_pixelSize);
 }
 
 void App::updatePFX(float i_delta)
@@ -188,7 +160,6 @@ void App::drawFrame()
   float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
   renderer->clear(true, true, false, clearColor);
 
-
   // Draw the background
   float maxY = (float)height / (float)width * 100.0f;
   renderer->setup2DMode(-50.0f, 50.0f, maxY, 0.0f);
@@ -210,14 +181,10 @@ void App::drawFrame()
     glVertex2f(-50.0f, 0.0f);
   glEnd();
 
-  // Draw the pre-mul alpha
-    // Setup scissor
-
   // Draw the traditional blending
-    // Setup scissor
-
-
-  // Reset the scissor
+  // Setup scissor
+  glEnable(GL_SCISSOR_TEST);
+  glScissor(0, 0, m_divPos, height);
 
   // Render each particle one by one, as the blend mode can change per particle
   for (Particle& p : m_particles)
@@ -264,25 +231,54 @@ void App::drawFrame()
     glEnd();
   }
 
+  // Draw the pre-mul alpha
+  // Setup scissor
+  glScissor(m_divPos + 1, 0, width, height);
+  renderer->reset();
+  //renderer->setBlendState(m_blendModePreMul);
+  //((OpenGLRenderer*)renderer)->setTexture(m_texPreMul);
+  renderer->apply();
+
+  glBegin(GL_QUADS);
+  for (Particle& p : m_particles)
+  {
+    vec2 offset1 = vec2(cosf(p.m_rotation), sinf(p.m_rotation)) * p.m_size;
+    vec2 offset2 = vec2(-offset1.y, offset1.x);
+
+    float texSize = 0.25f;
+    float texOffset = texSize * (uint32_t)p.m_type;
+    glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
+
+    glTexCoord2f(texOffset, 0.0f);
+    glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
+
+    glTexCoord2f(texOffset + texSize, 0.0f);
+    glVertex2fv(value_ptr(p.m_position + offset1 - offset2));
+
+    glTexCoord2f(texOffset + texSize, 1.0f);
+    glVertex2fv(value_ptr(p.m_position + offset1 + offset2));
+
+    glTexCoord2f(texOffset, 1.0f);
+    glVertex2fv(value_ptr(p.m_position - offset1 + offset2));
+  }
+  glEnd();
+
+  // Reset the scissor
+  glDisable(GL_SCISSOR_TEST);
+
   // Draw the dividing line
   renderer->reset();
   renderer->setup2DMode(0, (float)width, 0, (float)height);
   renderer->apply();
   glBegin(GL_QUADS);
     glColor3f(0.5f, 0.5f, 0.5f);
-    glVertex2i(m_divPos - 2, 0);
-    glVertex2i(m_divPos + 4, 0);
-    glVertex2i(m_divPos + 4, height);
-    glVertex2i(m_divPos - 2, height);
+    glVertex2i(m_divPos - 1, 0);
+    glVertex2i(m_divPos + 1, 0);
+    glVertex2i(m_divPos + 1, height);
+    glVertex2i(m_divPos - 1, height);
   glEnd();
 
   // Draw the draw call counts
-
-
-  renderer->reset();
-  //renderer->setShader(m_gridDraw);
-  //renderer->setTexture("perlinTex", m_perlin);
-  renderer->apply();
 
   renderer->reset();
   renderer->setDepthState(noDepthWrite);
