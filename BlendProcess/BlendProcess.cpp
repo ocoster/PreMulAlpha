@@ -14,6 +14,7 @@ enum class ImageMode
   Additive,
   AlphaBlend,
   Multiply,
+  InverseMultiply,
   PreMulAlpha,
 };
 
@@ -21,10 +22,11 @@ void PrintUsage()
 {
   printf("Usage: BlendProcess.exe <input blend> <input file> outputfile.png\n");
   printf("Input blend can specify one of the folowing:\n");
-  printf(" \"-a\" - input is additive\n");
-  printf(" \"-b\" - input is alpha blend\n");
-  printf(" \"-m\" - input is multiply (red channel)\n");
-  printf(" \"-p\" - input is pre-mul alpha\n\n");
+  printf(" \"-a\"  - input is additive\n");
+  printf(" \"-b\"  - input is alpha blend\n");
+  printf(" \"-m\"  - input is multiply (red channel)\n");
+  printf(" \"-im\" - input is inverse multiply (red channel)\n");
+  printf(" \"-p\"  - input is pre-mul alpha\n\n");
   printf("eg. BlendProcess.exe -a base.png -b blend.png out.png\n\n");
   printf("To add more layers: BlendProcess.exe -p out.png -b new.png out.png\n");
   printf("Input file can be of several formats, but output is always png.\n");
@@ -32,10 +34,11 @@ void PrintUsage()
 
 bool GetImageMode(const char* a_mode, ImageMode& a_retMode)
 {
-  if (strcmp(a_mode, "-a") == 0) { a_retMode = ImageMode::Additive;    return true; }
-  if (strcmp(a_mode, "-b") == 0) { a_retMode = ImageMode::AlphaBlend;  return true; }
-  if (strcmp(a_mode, "-m") == 0) { a_retMode = ImageMode::Multiply;    return true; }
-  if (strcmp(a_mode, "-p") == 0) { a_retMode = ImageMode::PreMulAlpha; return true; }
+  if (strcmp(a_mode, "-a") == 0)  { a_retMode = ImageMode::Additive;    return true; }
+  if (strcmp(a_mode, "-b") == 0)  { a_retMode = ImageMode::AlphaBlend;  return true; }
+  if (strcmp(a_mode, "-m") == 0)  { a_retMode = ImageMode::Multiply;    return true; }
+  if (strcmp(a_mode, "-im") == 0) { a_retMode = ImageMode::InverseMultiply; return true; }
+  if (strcmp(a_mode, "-p") == 0)  { a_retMode = ImageMode::PreMulAlpha; return true; }
   return false;
 }
 
@@ -156,6 +159,13 @@ int main(int a_argc, char* a_argv[])
 
         case(ImageMode::Multiply) : 
           color[3] = 1.0f - color[0];
+          color[0] = 0.0f;
+          color[1] = 0.0f;
+          color[2] = 0.0f;
+          break;
+
+        case(ImageMode::InverseMultiply):
+          color[3] = color[0];
           color[0] = 0.0f;
           color[1] = 0.0f;
           color[2] = 0.0f;
