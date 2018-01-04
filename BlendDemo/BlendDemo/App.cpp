@@ -96,10 +96,12 @@ bool App::load()
   if ((m_texAdditve = renderer->addTexture("Additive.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
   if ((m_texMultiply = renderer->addTexture("Multiply.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
   if ((m_texBlend = renderer->addTexture("Blend.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
-  
+  if ((m_texPreMul = renderer->addTexture("PreMul.png", true, trilinearAniso)) == TEXTURE_NONE) return false;
+
   m_blendModeAdditve = renderer->addBlendState(ONE, ONE);
   m_blendModeMultiply = renderer->addBlendState(ZERO, ONE_MINUS_SRC_COLOR);
   m_blendModeBlend = renderer->addBlendState(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
+  m_blendModePreMul = renderer->addBlendState(ONE, ONE_MINUS_SRC_ALPHA);
 
   //if ((m_gridDraw = renderer->addShader("gridDraw.shd")) == SHADER_NONE) return false;
 
@@ -235,8 +237,8 @@ void App::drawFrame()
   // Setup scissor
   glScissor(m_divPos + 1, 0, width, height);
   renderer->reset();
-  //renderer->setBlendState(m_blendModePreMul);
-  //((OpenGLRenderer*)renderer)->setTexture(m_texPreMul);
+  renderer->setBlendState(m_blendModePreMul);
+  ((OpenGLRenderer*)renderer)->setTexture(m_texPreMul);
   renderer->apply();
 
   glBegin(GL_QUADS);
@@ -247,6 +249,9 @@ void App::drawFrame()
 
     float texSize = 0.25f;
     float texOffset = texSize * (uint32_t)p.m_type;
+    //float texSize = 1.0f;
+    //float texOffset = 0.0f;
+
     glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
 
     glTexCoord2f(texOffset, 0.0f);
