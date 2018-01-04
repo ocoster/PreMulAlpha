@@ -20,7 +20,8 @@ enum class ImageMode
 
 void PrintUsage()
 {
-  printf("Usage: BlendProcess.exe <input blend> <input file> outputfile.png\n");
+  printf("Usage: BlendProcess.exe [-sRGB] <input blend> <input file> outputfile.png\n");
+  printf(" \"-sRGB\" - Optional. Input is converted from sRGB to linear before blending\n");
   printf("Input blend can specify one of the folowing:\n");
   printf(" \"-a\"  - input is additive\n");
   printf(" \"-b\"  - input is alpha blend\n");
@@ -78,10 +79,18 @@ int main(int a_argc, char* a_argv[])
 
   uint32_t imageWidth = 0;
   uint32_t imageHeight = 0;
+  bool usesRGBToLinear = false;
   std::vector<float> imageData;
 
-  // Loop for all options
+  // Set sRGB mode
   int32_t currArg = 1;
+  if (strcmp(a_argv[currArg], "-sRGB") == 0)
+  {
+    usesRGBToLinear = true;
+    currArg++;
+  }
+
+  // Loop for all options
   while ((currArg  + 2) < a_argc)
   {
     // Get the option
@@ -113,7 +122,7 @@ int main(int a_argc, char* a_argv[])
     }
 
     // If the first file, setup the buffer
-    if (currArg == 1)
+    if (imageData.size() == 0)
     {
       imageWidth = x;
       imageHeight = y;
@@ -138,11 +147,18 @@ int main(int a_argc, char* a_argv[])
     for (uint32_t i = 0; i < (imageWidth * imageHeight); i++)
     {
       float color[4] = {
-        SRGBToLinear(float(data[i * 4 + 0]) / 255.0f),
-        SRGBToLinear(float(data[i * 4 + 1]) / 255.0f),
-        SRGBToLinear(float(data[i * 4 + 2]) / 255.0f),
+        float(data[i * 4 + 0]) / 255.0f,
+        float(data[i * 4 + 1]) / 255.0f,
+        float(data[i * 4 + 2]) / 255.0f,
         float(data[i * 4 + 3]) / 255.0f,
       };
+      if (usesRGBToLinear)
+      {
+        for (uint32_t c = 0; c < 3; c++)
+        {
+          color[c] = SRGBToLinear(color[c]);
+        }
+      }
 
       // Convert to pre-mul alpha
       switch (mode)
@@ -192,9 +208,18 @@ int main(int a_argc, char* a_argv[])
   {
     const float* srcPixel = &imageData[i * 4];
     uint8_t* dstPixel = &outputData[i * 4];
-    dstPixel[0] = (uint8_t)(clamp(LinearToSRGB(srcPixel[0]), 0.0f, 1.0f) * 255.0f + 0.5f);
-    dstPixel[1] = (uint8_t)(clamp(LinearToSRGB(srcPixel[1]), 0.0f, 1.0f) * 255.0f + 0.5f);
-    dstPixel[2] = (uint8_t)(clamp(LinearToSRGB(srcPixel[2]), 0.0f, 1.0f) * 255.0f + 0.5f);
+    if (usesRGBToLinear)
+    {
+      dstPixel[0] = (uint8_t)(clamp(LinearToSRGB(srcPixel[0]), 0.0f, 1.0f) * 255.0f + 0.5f);
+      dstPixel[1] = (uint8_t)(clamp(LinearToSRGB(srcPixel[1]), 0.0f, 1.0f) * 255.0f + 0.5f);
+      dstPixel[2] = (uint8_t)(clamp(LinearToSRGB(srcPixel[2]), 0.0f, 1.0f) * 255.0f + 0.5f);
+    }
+    else
+    {
+      dstPixel[0] = (uint8_t)(clamp(srcPixel[0], 0.0f, 1.0f) * 255.0f + 0.5f);
+      dstPixel[1] = (uint8_t)(clamp(srcPixel[1], 0.0f, 1.0f) * 255.0f + 0.5f);
+      dstPixel[2] = (uint8_t)(clamp(srcPixel[2], 0.0f, 1.0f) * 255.0f + 0.5f);
+    }
     dstPixel[3] = (uint8_t)(clamp(1.0f - srcPixel[3], 0.0f, 1.0f) * 255.0f + 0.5f);
   }
 
