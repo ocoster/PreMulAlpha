@@ -192,10 +192,10 @@ int main(int a_argc, char* a_argv[])
   {
     const float* srcPixel = &imageData[i * 4];
     uint8_t* dstPixel = &outputData[i * 4];
-    dstPixel[0] = (uint8_t)(clamp(LinearToSRGB(srcPixel[0]), 0.0f, 1.0f) * 255.0f);
-    dstPixel[1] = (uint8_t)(clamp(LinearToSRGB(srcPixel[1]), 0.0f, 1.0f) * 255.0f);
-    dstPixel[2] = (uint8_t)(clamp(LinearToSRGB(srcPixel[2]), 0.0f, 1.0f) * 255.0f);
-    dstPixel[3] = (uint8_t)(clamp(1.0f - srcPixel[3], 0.0f, 1.0f) * 255.0f);
+    dstPixel[0] = (uint8_t)(clamp(LinearToSRGB(srcPixel[0]), 0.0f, 1.0f) * 255.0f + 0.5f);
+    dstPixel[1] = (uint8_t)(clamp(LinearToSRGB(srcPixel[1]), 0.0f, 1.0f) * 255.0f + 0.5f);
+    dstPixel[2] = (uint8_t)(clamp(LinearToSRGB(srcPixel[2]), 0.0f, 1.0f) * 255.0f + 0.5f);
+    dstPixel[3] = (uint8_t)(clamp(1.0f - srcPixel[3], 0.0f, 1.0f) * 255.0f + 0.5f);
   }
 
   // Write output png file
