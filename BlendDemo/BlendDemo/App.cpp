@@ -247,23 +247,39 @@ void App::drawFrame()
     vec2 offset1 = vec2(cosf(p.m_rotation), sinf(p.m_rotation)) * p.m_size;
     vec2 offset2 = vec2(-offset1.y, offset1.x);
 
-    float texSize = 0.25f;
-    float texOffset = texSize * (uint32_t)p.m_type;
-    //float texSize = 1.0f;
-    //float texOffset = 0.0f;
+    float texSize = 0.5f;
+    float texOffsetX = 0.0f;
+    float texOffsetY = 0.0f;
+    switch (p.m_type)
+    {
+    case(ParticleType::Additive):
+      texOffsetX = 0.0f;
+      texOffsetY = 0.0f;
+      break;
+
+    case(ParticleType::Multiply):
+      texOffsetX = texSize;
+      texOffsetY = 0.0f;
+      break;
+
+    case(ParticleType::Blend):
+      texOffsetX = 0.0f;
+      texOffsetY = texSize;
+      break;
+    }
 
     glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
 
-    glTexCoord2f(texOffset, 0.0f);
+    glTexCoord2f(texOffsetX, texOffsetY);
     glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
 
-    glTexCoord2f(texOffset + texSize, 0.0f);
+    glTexCoord2f(texOffsetX + texSize, texOffsetY);
     glVertex2fv(value_ptr(p.m_position + offset1 - offset2));
 
-    glTexCoord2f(texOffset + texSize, 1.0f);
+    glTexCoord2f(texOffsetX + texSize, texOffsetY + texSize);
     glVertex2fv(value_ptr(p.m_position + offset1 + offset2));
 
-    glTexCoord2f(texOffset, 1.0f);
+    glTexCoord2f(texOffsetX, texOffsetY + texSize);
     glVertex2fv(value_ptr(p.m_position - offset1 + offset2));
   }
   glEnd();
