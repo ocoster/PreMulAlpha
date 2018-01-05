@@ -23,7 +23,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 BlendProcess/.vs/
@@ -32,3 +31,6 @@ BlendDemo/BlendDemo/Debug/
 BlendDemo/BlendDemo/.vs/
 BlendDemo/BlendDemo/BlendDemo_d.pdb
 BlendDemo/BlendDemo/BlendDemo_d.ilk
+BlendDemo/BlendDemo/BlendDemo.vcxproj.user
+BlendDemo/BlendDemo/BlendDemo.map
+BlendProcess/BlendProcess.vcxproj.user
