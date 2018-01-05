@@ -189,6 +189,7 @@ void App::drawFrame()
   glScissor(0, 0, m_divPos, height);
 
   // Render each particle one by one, as the blend mode can change per particle
+  uint32_t drawCallCount = 0;
   for (Particle& p : m_particles)
   {
     // Bind the appropiate blend mode and texture
@@ -216,6 +217,7 @@ void App::drawFrame()
     renderer->apply();
 
     glBegin(GL_QUADS);
+      drawCallCount++;
       vec2 offset1 = vec2(cosf(p.m_rotation), sinf(p.m_rotation)) * p.m_size;
       vec2 offset2 = vec2(-offset1.y, offset1.x);
 
@@ -300,24 +302,29 @@ void App::drawFrame()
   glEnd();
 
   // Draw the draw call counts
-
   renderer->reset();
   renderer->setDepthState(noDepthWrite);
   renderer->apply();
-
   {
     char buffer[100];
-    float xPos = (float)width - 250.0f;
 
-#ifdef _DEBUG
-    sprintf(buffer, "Alloc Count %d", g_allocRequestCount);
-    renderer->drawText(buffer, xPos, 138.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
-    
-    sprintf(buffer, "Free Count %d", g_allocFreeCount);
-    renderer->drawText(buffer, xPos, 168.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
-    
-    sprintf(buffer, "Working Count %d", g_allocRequestCount - g_allocFreeCount);
-    renderer->drawText(buffer, xPos, 198.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
-#endif // _DEBUG
+    sprintf(buffer, "Draw calls = %d", drawCallCount);
+    renderer->drawText("Mixed blend mode", 30.0f, 38.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
+    renderer->drawText(buffer, 30.0f, 68.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
+
+    renderer->drawText("Pre-multiply", (float)width - 200.0f, 38.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
+    renderer->drawText("Draw calls = 1", (float)width - 200.0f, 68.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
+
+//#ifdef _DEBUG
+//    float xPos = (float)width - 250.0f;
+//    sprintf(buffer, "Alloc Count %d", g_allocRequestCount);
+//    renderer->drawText(buffer, xPos, 138.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
+//    
+//    sprintf(buffer, "Free Count %d", g_allocFreeCount);
+//    renderer->drawText(buffer, xPos, 168.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
+//    
+//    sprintf(buffer, "Working Count %d", g_allocRequestCount - g_allocFreeCount);
+//    renderer->drawText(buffer, xPos, 198.0f, 30, 38, defaultFont, linearClamp, blendSrcAlpha, noDepthTest);
+//#endif // _DEBUG
   }
 }
