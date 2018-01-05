@@ -52,20 +52,20 @@ protected:
   
   SamplerStateID trilinearClamp, trilinearAniso, radialFilter;
 
-  bool m_mouseLeftDown = false;
-  int32_t m_divPos = 0;
+  bool m_mouseLeftDown = false;     //!< If the mouse button is down
+  int32_t m_divPos = 0;             //!< The divider position
 
-  std::vector<Particle> m_particles; //!< The array of render particles
+  std::vector<Particle> m_particles;//!< The array of render particles
 
-  TextureID m_texBackground;         //<! The bcakground texture
+  TextureID m_texBackground;        //<! The bcakground texture
 
-  TextureID m_texAdditve;
-  TextureID m_texMultiply;
-  TextureID m_texBlend;
+  TextureID m_texAdditve;           //!< The additive texture
+  TextureID m_texMultiply;          //!< The multiply texture
+  TextureID m_texBlend;             //!< The blend texture
 
-  BlendStateID m_blendModeAdditve;
-  BlendStateID m_blendModeMultiply;
-  BlendStateID m_blendModeBlend;
+  BlendStateID m_blendModeAdditve;  //!< The additive blend mode (ONE, ONE)
+  BlendStateID m_blendModeMultiply; //!< The multiply blend mode (ZERO, ONE_MINUS_SRC_COLOR)
+  BlendStateID m_blendModeBlend;    //!< The stadard post multiply alpha blend mode (SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
 
   TextureID m_texPreMul;           //!< The pre multiply texture
   BlendStateID m_blendModePreMul;  //!< The pre multiply blend mode (ONE, ONE_MINUS_SRC_ALPHA)
