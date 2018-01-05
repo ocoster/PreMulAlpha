@@ -6,10 +6,9 @@
 #include "../Framework3/OpenGL/OpenGLApp.h"
 #include <vector>
 
-class App : public OpenGLApp {
+class App : public OpenGLApp
+{
 public:
-
-  App();
 
   char *getTitle() const override { return "Pre-Multiply Blend Demo"; }
   bool init() override;
@@ -34,7 +33,6 @@ protected:
     MAX
   };
 
-
   struct Particle
   {
     inline Particle() { Reset(); }
@@ -50,18 +48,16 @@ protected:
     float m_alphaDelta = 0.1f;
     float m_sizeDelta = 0.0f;
     float m_rotationDelta = 0.0f;
-
   };
-
-
-  mat4 m_projection; //!< The projection matrix used
+  
   SamplerStateID trilinearClamp, trilinearAniso, radialFilter;
 
+  bool m_mouseLeftDown = false;
   int32_t m_divPos = 0;
 
-  std::vector<Particle> m_particles; //!< The array of rendre particles
+  std::vector<Particle> m_particles; //!< The array of render particles
 
-  TextureID m_texBackground; 
+  TextureID m_texBackground;         //<! The bcakground texture
 
   TextureID m_texAdditve;
   TextureID m_texMultiply;
@@ -71,8 +67,6 @@ protected:
   BlendStateID m_blendModeMultiply;
   BlendStateID m_blendModeBlend;
 
-  TextureID m_texPreMul;
-  BlendStateID m_blendModePreMul;
-
-  //ShaderID m_gridDraw;
+  TextureID m_texPreMul;           //!< The pre multiply texture
+  BlendStateID m_blendModePreMul;  //!< The pre multiply blend mode (ONE, ONE_MINUS_SRC_ALPHA)
 }; 

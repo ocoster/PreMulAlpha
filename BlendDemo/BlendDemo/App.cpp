@@ -4,21 +4,11 @@
 //======================================================================
 
 #include "App.h"
-#include <crtdbg.h>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <sstream> 
-#include <algorithm>
-#include <time.h>
 
 extern long g_allocRequestCount;
 extern long g_allocFreeCount;
 
 BaseApp *CreateApp() { return new App(); }
-
-bool s_mouseLeftDown = false;
-
 
 int32_t RandomInt(int32_t i_min, int32_t i_max)
 {
@@ -48,10 +38,6 @@ void App::Particle::Reset()
   m_alphaDelta = RandomFloat(-0.06f, -0.01f);
   m_sizeDelta = RandomFloat(0.0f, 0.5f);
   m_rotationDelta = RandomFloat(-0.5f, 0.5f);
-}
-
-App::App()
-{
 }
 
 bool App::init()
@@ -103,8 +89,7 @@ bool App::load()
   m_blendModeBlend = renderer->addBlendState(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
   m_blendModePreMul = renderer->addBlendState(ONE, ONE_MINUS_SRC_ALPHA);
 
-  //if ((m_gridDraw = renderer->addShader("gridDraw.shd")) == SHADER_NONE) return false;
-
+  // Set initial divider position
   m_divPos = width / 2;
 
   return true;
@@ -114,7 +99,7 @@ bool App::onMouseButton(const int x, const int y, const MouseButton button, cons
 {
   if (button == MOUSE_LEFT)
   {
-    s_mouseLeftDown = pressed;
+    m_mouseLeftDown = pressed;
     m_divPos = x;
   }
   return OpenGLApp::onMouseButton(x, y, button, pressed);
@@ -122,7 +107,7 @@ bool App::onMouseButton(const int x, const int y, const MouseButton button, cons
 
 bool App::onMouseMove(const int x, const int y, const int deltaX, const int deltaY)
 {
-  if (s_mouseLeftDown)
+  if (m_mouseLeftDown)
   {
     m_divPos = x;
   }
@@ -150,14 +135,6 @@ void App::drawFrame()
 {
   // Update the PFX
   updatePFX(frameTime);
-
-  mat4 modelview = scale(1.0f, 1.0f, -1.0f) * rotateXY(-wx, -wy) * translate(-camPos) * rotateX(PI * 0.5f);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadMatrixf(value_ptr(m_projection));
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(value_ptr(modelview));
 
   float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
   renderer->clear(true, true, false, clearColor);
@@ -237,7 +214,7 @@ void App::drawFrame()
 
   // Draw the pre-mul alpha
   // Setup scissor
-  glScissor(m_divPos + 1, 0, width, height);
+  glScissor(m_divPos, 0, width, height);
   renderer->reset();
   renderer->setBlendState(m_blendModePreMul);
   ((OpenGLRenderer*)renderer)->setTexture(m_texPreMul);
@@ -302,9 +279,6 @@ void App::drawFrame()
   glEnd();
 
   // Draw the draw call counts
-  renderer->reset();
-  renderer->setDepthState(noDepthWrite);
-  renderer->apply();
   {
     char buffer[100];
 
