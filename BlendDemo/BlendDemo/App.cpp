@@ -167,34 +167,11 @@ void App::drawFrame()
 
   // Render each particle one by one, as the blend mode can change per particle
   uint32_t drawCallCount = 0;
-  for (Particle& p : m_particles)
   {
-    // Bind the appropiate blend mode and texture
-    renderer->reset();
-    switch (p.m_type)
+    auto drawQuad = [&](const Particle& p) 
     {
-    case(ParticleType::Additive): 
-      renderer->setBlendState(m_blendModeAdditve);
-      ((OpenGLRenderer*)renderer)->setTexture(m_texAdditve);
-      glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
-      break;
-
-    case(ParticleType::Multiply): 
-      renderer->setBlendState(m_blendModeMultiply);
-      ((OpenGLRenderer*)renderer)->setTexture(m_texMultiply);
-      glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
-      break;
-
-    case(ParticleType::Blend): 
-      renderer->setBlendState(m_blendModeBlend);
-      ((OpenGLRenderer*)renderer)->setTexture(m_texBlend);
-      glColor4f(1.0f, 1.0f, 1.0f, p.m_alpha);
-      break;
-    }
-    renderer->apply();
-
-    glBegin(GL_QUADS);
       drawCallCount++;
+      glBegin(GL_QUADS);
       vec2 offset1 = vec2(cosf(p.m_rotation), sinf(p.m_rotation)) * p.m_size;
       vec2 offset2 = vec2(-offset1.y, offset1.x);
 
@@ -209,7 +186,63 @@ void App::drawFrame()
 
       glTexCoord2f(0.0f, 1.0f);
       glVertex2fv(value_ptr(p.m_position - offset1 + offset2));
-    glEnd();
+      glEnd();
+    };
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    auto drawAdditiveMode = [&](const Particle& p)
+    {
+      renderer->reset();
+      renderer->setBlendState(m_blendModeAdditve);
+      ((OpenGLRenderer*)renderer)->setTexture(m_texAdditve);
+      //glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
+      renderer->apply();
+      drawQuad(p);
+    };
+
+    auto drawMultiplyMode = [&](const Particle& p)
+    {
+      renderer->reset();
+      renderer->setBlendState(m_blendModeMultiply);
+      ((OpenGLRenderer*)renderer)->setTexture(m_texMultiply);
+      //glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
+      renderer->apply();
+      drawQuad(p);
+    };
+
+    auto drawBlendMode = [&](const Particle& p)
+    {
+      renderer->reset();
+      renderer->setBlendState(m_blendModeBlend);
+      ((OpenGLRenderer*)renderer)->setTexture(m_texBlend);
+      //glColor4f(1.0f, 1.0f, 1.0f, p.m_alpha);
+      renderer->apply();
+      drawQuad(p);
+    };
+
+    for (Particle& p : m_particles)
+    {
+      // Bind the appropiate blend mode and texture
+      switch (p.m_type)
+      {
+      case(ParticleType::Additive):
+        drawAdditiveMode(p);
+        break;
+
+      case(ParticleType::Multiply):
+        drawMultiplyMode(p);
+        break;
+
+      case(ParticleType::Blend):
+        drawBlendMode(p);
+        break;
+
+      case(ParticleType::BlendAddMul):
+        drawBlendMode(p);
+        drawAdditiveMode(p);
+        //drawMultiplyMode(p);
+        break;
+      }
+    }
   }
 
   // Draw the pre-mul alpha
@@ -245,9 +278,15 @@ void App::drawFrame()
       texOffsetX = 0.0f;
       texOffsetY = texSize;
       break;
+
+    case(ParticleType::BlendAddMul):
+      texOffsetX = texSize;
+      texOffsetY = texSize;
+      break;
     }
 
-    glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
+    //glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     glTexCoord2f(texOffsetX, texOffsetY);
     glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
