@@ -164,37 +164,47 @@ int main(int a_argc, char* a_argv[])
       switch (mode)
       {
         case(ImageMode::Additive) : 
-          color[3] = 0.0f; 
+          color[3] = 1.0f; 
           break;
 
         case(ImageMode::AlphaBlend) : 
           color[0] *= color[3];
           color[1] *= color[3];
           color[2] *= color[3];
+          color[3] = 1.0f - color[3];
           break;
 
         case(ImageMode::Multiply) : 
-          color[3] = 1.0f - color[0];
+          color[3] = color[0];
           color[0] = 0.0f;
           color[1] = 0.0f;
           color[2] = 0.0f;
           break;
 
         case(ImageMode::InverseMultiply):
-          color[3] = color[0];
+          color[3] = 1.0f - color[0];
           color[0] = 0.0f;
           color[1] = 0.0f;
           color[2] = 0.0f;
           break;
+
+        case(ImageMode::PreMulAlpha):
+          color[3] = 1.0f - color[3];
+          break;
       }
 
       // Apply to the pixel
-      float invAlpha = 1.0f - color[3];
       float* dstPixel = &imageData[i * 4];
-      dstPixel[0] = dstPixel[0] * invAlpha + color[0];
-      dstPixel[1] = dstPixel[1] * invAlpha + color[1];
-      dstPixel[2] = dstPixel[2] * invAlpha + color[2];
-      dstPixel[3] = dstPixel[3] * invAlpha;
+      dstPixel[0] = dstPixel[0] * color[3] + color[0];
+      dstPixel[1] = dstPixel[1] * color[3] + color[1];
+      dstPixel[2] = dstPixel[2] * color[3] + color[2];
+      dstPixel[3] = dstPixel[3] * color[3];
+
+      // Clamp to low range (if necessary)
+      //dstPixel[0] = clamp(dstPixel[0], 0.0f, 1.0f);
+      //dstPixel[1] = clamp(dstPixel[1], 0.0f, 1.0f);
+      //dstPixel[2] = clamp(dstPixel[2], 0.0f, 1.0f);
+      //dstPixel[3] = clamp(dstPixel[3], 0.0f, 1.0f);
     }
 
     stbi_image_free(data);
