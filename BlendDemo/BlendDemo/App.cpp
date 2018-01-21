@@ -188,13 +188,13 @@ void App::drawFrame()
       glVertex2fv(value_ptr(p.m_position - offset1 + offset2));
       glEnd();
     };
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
     auto drawAdditiveMode = [&](const Particle& p)
     {
       renderer->reset();
       renderer->setBlendState(m_blendModeAdditve);
       ((OpenGLRenderer*)renderer)->setTexture(m_texAdditve);
-      //glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
+      glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
       renderer->apply();
       drawQuad(p);
     };
@@ -204,7 +204,7 @@ void App::drawFrame()
       renderer->reset();
       renderer->setBlendState(m_blendModeMultiply);
       ((OpenGLRenderer*)renderer)->setTexture(m_texMultiply);
-      //glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
+      glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, 1.0f);
       renderer->apply();
       drawQuad(p);
     };
@@ -214,7 +214,7 @@ void App::drawFrame()
       renderer->reset();
       renderer->setBlendState(m_blendModeBlend);
       ((OpenGLRenderer*)renderer)->setTexture(m_texBlend);
-      //glColor4f(1.0f, 1.0f, 1.0f, p.m_alpha);
+      glColor4f(1.0f, 1.0f, 1.0f, p.m_alpha);
       renderer->apply();
       drawQuad(p);
     };
@@ -236,10 +236,9 @@ void App::drawFrame()
         drawBlendMode(p);
         break;
 
-      case(ParticleType::BlendAddMul):
+      case(ParticleType::BlendAdd):
         drawBlendMode(p);
         drawAdditiveMode(p);
-        //drawMultiplyMode(p);
         break;
       }
     }
@@ -279,14 +278,13 @@ void App::drawFrame()
       texOffsetY = texSize;
       break;
 
-    case(ParticleType::BlendAddMul):
+    case(ParticleType::BlendAdd):
       texOffsetX = texSize;
       texOffsetY = texSize;
       break;
     }
 
-    //glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glColor4f(p.m_alpha, p.m_alpha, p.m_alpha, p.m_alpha);
 
     glTexCoord2f(texOffsetX, texOffsetY);
     glVertex2fv(value_ptr(p.m_position - offset1 - offset2));
