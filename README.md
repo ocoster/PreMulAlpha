@@ -9,16 +9,21 @@ For example, if you are rendering some leaves, you have an alpha channel indicat
 |:--:| :--:|
 | *A typical alpha blended texture* | *The color channels in the texture* |
 
-Rendering with the standard blend mode (alpa, 1-alpha) resiults in color bleeding in around the leaf edges. (ie. black)
+Rendering with the standard blend mode (alpha, 1-alpha) results in color bleeding in around the leaf edges. (ie. black)
 
 ![](Images/BlendArtifacts.png) 
 
 Most games resolve this by having artists fill in these background areas with a fill color (ie green).
-*However* by pre multiplying the image offline and using pre-Multiplied alpha blend mode (1, 1-alpha) this in fill is not necessary.
+*However* by pre-multiplying the image offline and using pre-Multiplied alpha blend mode (1, 1-alpha) this "in fill" is not necessary.
 
 
 ![](Images/BlendPreMul.png) 
 
+
+
+```
+Tip: The DXT1A texture compression format was designed for use with pre-multiplied alpha.
+```
 
 ## The three in one blend mode
 
