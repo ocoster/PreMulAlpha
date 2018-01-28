@@ -14,7 +14,7 @@ Rendering with the standard blend mode (alpha, 1-alpha) results in color bleedin
 ![](Images/BlendArtifacts.png) 
 
 Most games resolve this by having artists fill in these background areas with a fill color (ie green).
-*However* by pre-multiplying the image offline and using pre-Multiplied alpha blend mode (1, 1-alpha) this "in fill" is not necessary.
+*However* by pre-multiplying the image offline and using pre-multiplied alpha blend mode (1, 1-alpha) this "in fill" is not necessary.
 
 
 ![](Images/BlendPreMul.png) 
@@ -36,7 +36,7 @@ There are three main blend modes used in games:
 |:--:| 
 | *Blend  modes from Morgan McGuire presentation* |
 
-All three blending modes can be used as the pre multiply blend mode by pre-processing the textures.
+All three blending modes can be used as the pre-multiply blend mode by pre-processing the textures.
 - Additive - Set alpha to zero.
 - Alpha Blend - Multiply the color by the alpha value.
 - Multiply - Store (1 - color) in the alpha channel, then set color to black. 
@@ -74,9 +74,13 @@ but you may start getting artifacts unless the textures and destination buffer i
 There are may other resons to use pre-multipled alpha. Some of which are listed below:
 
 http://www.realtimerendering.com/blog/gpus-prefer-premultiplication/
+
 http://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
+
 http://tomforsyth1000.github.io/blog.wiki.html#[[Premultiplied%20alpha%20part%202]]
+
 https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre
+
 http://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/
 
 
