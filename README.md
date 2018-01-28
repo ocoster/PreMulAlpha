@@ -27,12 +27,41 @@ Tip: The DXT1A texture compression format was designed for use with pre-multipli
 
 ## The three in one blend mode
 
-
-
+There are three main blend modes used in games:
+- Additive - Used in sparks, fire, lights, glowing objects etc.
+- Alpha Blend - Used in leaves, fences, smoke etc.
+- Multiply - Used in stained glass windows, darkening smoke effects
 
 | ![](Images/BlendModes.png) | 
 |:--:| 
 | *Blend  modes from Morgan McGuire presentation* |
+
+All three blending modes can be used as the pre multiply blend mode by pre-processing the textures.
+- Additive - Set alpha to zero.
+- Alpha Blend - Multiply the color by the alpha value.
+- Multiply - Store (1 - color) in the alpha channel, then set color to black. 
+
+```
+Tip: The multiply blend mode only supports a grey scale value when using pre-multiplied alpha.
+By exporting two colors and doing multiply+add as the blend mode would support the full multiply blend mode.
+You need "Dual Source Blending" support for this (eg. GL_ARB_blend_func_extended)
+```
+
+## Reducing overdraw with Pre-Multiplied Alpha
+
+Another neat trick with pre-multiplied alpha is that if you have overlapping textures that are in known positions, you can pre-process them all down to one texture.
+
+For example, if you have a smoke particle effect, you could add sparks to the smoke textures and render them for free.
+
+Another example is if you have a head up display UI in the game made up of different blended elements. 
+
+
+
+
+```
+Tip: There is no limit to the number of textures you can combine, 
+but you may start getting artifacts unless the textures and destination buffer is HDR.
+```
 
 ## Reducing draw calls with Pre-Multiplied Alpha
 
