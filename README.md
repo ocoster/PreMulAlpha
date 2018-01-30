@@ -55,7 +55,9 @@ For example, if you have a smoke particle effect, you could add sparks to the sm
 
 Another example is if you have a head up display UI in the game made up of different blended elements. 
 
-
+| ![](Images/Blend.png) | + | ![](Images/Additive.png) | + |![](Images/Multiply.png) | = | ![](Images/Bam.png) | 
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| *Blend texture* | | *Additive texture* | | *Inverse multiply texture* | | *Combined texture* |
 
 
 ```
