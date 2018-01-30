@@ -236,9 +236,10 @@ void App::drawFrame()
         drawBlendMode(p);
         break;
 
-      case(ParticleType::BlendAdd):
+      case(ParticleType::BlendAddMul):
         drawBlendMode(p);
         drawAdditiveMode(p);
+        drawMultiplyMode(p);
         break;
       }
     }
@@ -278,7 +279,7 @@ void App::drawFrame()
       texOffsetY = texSize;
       break;
 
-    case(ParticleType::BlendAdd):
+    case(ParticleType::BlendAddMul):
       texOffsetX = texSize;
       texOffsetY = texSize;
       break;

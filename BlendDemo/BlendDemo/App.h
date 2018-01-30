@@ -29,7 +29,7 @@ protected:
     Additive = 0,
     Multiply,
     Blend,
-    BlendAdd, //!< Blend and add in one blend mode
+    BlendAddMul, //!< Blend, add and multiply in one blend mode
 
     MAX
   };
