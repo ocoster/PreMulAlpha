@@ -93,9 +93,11 @@ http://www.realtimerendering.com/blog/gpus-prefer-premultiplication/
 http://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
 
 http://tomforsyth1000.github.io/blog.wiki.html#[[Premultiplied%20alpha]]
+
 http://tomforsyth1000.github.io/blog.wiki.html#[[Premultiplied%20alpha%20part%202]]
 
 Why pre-multiply blend mode should be used in mip map generation:
+
 https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre
 
 http://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/

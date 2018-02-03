@@ -29,14 +29,14 @@ float RandomFloat(float i_min, float i_max)
 void App::Particle::Reset()
 {
   m_position = vec2(0.0f, 0.0f);
-  m_alpha = 1.0f;
+  m_alpha = 1.5f;
   m_size = 1.0f;
   m_rotation = 0.0f;
   m_type = (ParticleType)RandomInt(0, (int32_t)ParticleType::MAX - 1);
 
-  m_direction = vec2(RandomFloat(-2.0f, 2.0f), RandomFloat(2.0f, 6.0f));
-  m_alphaDelta = RandomFloat(-0.06f, -0.01f);
-  m_sizeDelta = RandomFloat(0.0f, 0.5f);
+  m_direction = vec2(RandomFloat(-4.0f, 4.0f), RandomFloat(4.0f, 10.0f));
+  m_alphaDelta = RandomFloat(-0.15f, -0.09f);
+  m_sizeDelta = RandomFloat(0.5f, 1.5f);
   m_rotationDelta = RandomFloat(-0.5f, 0.5f);
 }
 
