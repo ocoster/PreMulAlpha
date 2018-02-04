@@ -41,6 +41,12 @@ All three blending modes can be used as the pre-multiply blend mode by pre-proce
 - Alpha Blend - Multiply the color by the alpha value.
 - Multiply - Store (1 - color) in the alpha channel, then set color to black. 
 
+Then at runtime, the pre-myltiple blend can be set to (1, 1 - alpha). This is the blend mode code for OpenGL:
+```
+glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+```
+
+
 ```
 Tip: The multiply blend mode only supports a grey scale value when using pre-multiplied alpha.
 By exporting two colors and doing multiply+add as the blend mode would support the full multiply blend mode.
