@@ -90,25 +90,6 @@ By switching to pre-multiplied blend mode for all particle effects, and entire s
 | *An example PFX using multiple blend modes. Left is switching blend mode, right is using pre-multiplied blending* |
 
 
-## Links
-
-There are may other resons to use pre-multiplied alpha. Some of which are listed below:
-
-http://www.realtimerendering.com/blog/gpus-prefer-premultiplication/
-
-http://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
-
-http://tomforsyth1000.github.io/blog.wiki.html#[[Premultiplied%20alpha]]
-
-http://tomforsyth1000.github.io/blog.wiki.html#[[Premultiplied%20alpha%20part%202]]
-
-Why pre-multiply blend mode should be used in mip map generation:
-
-https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre
-
-http://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/
-
-
 ## Tools
 This project includes descriptions/examples and tools for using pre-multiplied alpha.
 
@@ -139,6 +120,37 @@ Input file can be of several formats, but output is always png.
 
 #### BlendDemo
 
+An example blending demo to demonstrate rendering multiple blend modes in one draw call. The particle effect can spawn one of four blend modes:
+- Additive
+- Multiply
+- Alpha blending
+- Combined (Alpha blending/Additive/Multiply)
+
+The left side using traditional blending, with the right side using pre-multiplied alpha. 
+Note that the combined blend mode does look different as the pre-mul blend mode is at a higher precision.
+Using HDR for blending should result in the same output.
+
+Use the left mouse button to click and drag the divider.
+
+![](Images/MultipleBlendPFX.png)
+
+## Links
+
+There are may other reasons to use pre-multiplied alpha. Some of which are listed below:
+
+http://www.realtimerendering.com/blog/gpus-prefer-premultiplication/
+
+http://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
+
+http://tomforsyth1000.github.io/blog.wiki.html#[[Premultiplied%20alpha]]
+
+http://tomforsyth1000.github.io/blog.wiki.html#[[Premultiplied%20alpha%20part%202]]
+
+Why pre-multiply blend mode should be used in mip map generation:
+
+https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre
+
+http://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/
 
 
 
