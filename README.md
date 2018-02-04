@@ -81,7 +81,7 @@ In a typical game engine, each particle system is rendered separately with it's 
 
 Some batching might be able to be done with texture atlasing, but the different blend modes will break most batching attempts.
 
-Consider the worst case of a particle effect that changes blend mode on a per-particle basis - eg. smoke with sparks interspersed. This will require change the blend mode on a per particle basis in order to do correct rendering.
+Consider the worst case of a particle effect that changes blend mode on a per-particle basis - eg. smoke with sparks interspersed. This will require changing the blend mode on a per particle basis in order to do correct rendering.
 
 By switching to pre-multiplied blend mode for all particle effects, and entire scene can be done with one draw call (assuming atlasing/2D array for the textures)
 
