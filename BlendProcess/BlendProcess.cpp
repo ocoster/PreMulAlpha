@@ -22,12 +22,13 @@ void PrintUsage()
 {
   printf("Usage: BlendProcess.exe [-sRGB] <input blend> <input file> outputfile.png\n");
   printf(" \"-sRGB\" - Optional. Input is converted from sRGB to linear before blending\n");
-  printf("Input blend can specify one of the folowing:\n");
+  printf("Input blend can specify one of the following:\n");
   printf(" \"-a\"  - input is additive\n");
   printf(" \"-b\"  - input is alpha blend\n");
   printf(" \"-m\"  - input is multiply (red channel)\n");
   printf(" \"-im\" - input is inverse multiply (red channel)\n");
   printf(" \"-p\"  - input is pre-mul alpha\n\n");
+  printf("Note that you can can supply as many input blend/input file pairs as needed.\n\n");
   printf("eg. BlendProcess.exe -a base.png -b blend.png out.png\n\n");
   printf("To add more layers: BlendProcess.exe -p out.png -b new.png out.png\n");
   printf("Input file can be of several formats, but output is always png.\n");

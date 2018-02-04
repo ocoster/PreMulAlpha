@@ -111,3 +111,34 @@ http://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/
 
 ## Tools
 This project includes descriptions/examples and tools for using pre-multiplied alpha.
+
+#### BlendProcess
+This tool is a command line utility to convert textures for pre-multiply blending. 
+
+It can also be used to combine textures of different blend modes into a single pre-multiply blend texture.
+
+Ensure the "-sRGB" option is specified if in your rendering engine blending is done in a gamma correct space. (ie texture lookups convert from sRGB to linear space)
+
+```
+Usage: BlendProcess.exe [-sRGB] <input blend> <input file> outputfile.png
+ "-sRGB" - Optional. Input is converted from sRGB to linear before blending
+Input blend can specify one of the following:
+ "-a"  - input is additive
+ "-b"  - input is alpha blend
+ "-m"  - input is multiply (red channel)
+ "-im" - input is inverse multiply (red channel)
+ "-p"  - input is pre-mul alpha
+
+Note that you can can supply as many input blend/input file pairs as needed.
+
+eg. BlendProcess.exe -a base.png -b blend.png out.png
+
+To add more layers: BlendProcess.exe -p out.png -b new.png out.png
+Input file can be of several formats, but output is always png.
+```
+
+#### BlendDemo
+
+
+
+
