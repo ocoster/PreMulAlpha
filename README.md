@@ -1,7 +1,7 @@
 # Pre-Multiplied Alpha
 Pre-Multiplied alpha blend is a blend mode has been around for a long time, but it seems to be re-discovered every few years.
 
-Typically, the primary reason to  use pre-multiplied alpha is to get rid of back outlines when rendering.
+Typically, the primary reason to  use pre-multiplied alpha is to get rid of black outlines when rendering.
 
 For example, if you are rendering some leaves, you have an alpha channel indicating the leaf edges.
 
@@ -41,7 +41,7 @@ All three blending modes can be used as the pre-multiply blend mode by pre-proce
 - Alpha Blend - Multiply the color by the alpha value.
 - Multiply - Store (1 - color) in the alpha channel, then set color to black. 
 
-Then at runtime, the pre-myltiple blend can be set to (1, 1 - alpha). This is the blend mode code for OpenGL:
+Then at runtime, the blend mode can be set to (1, 1 - alpha). This is the blend mode code for OpenGL:
 ```
 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 ```
