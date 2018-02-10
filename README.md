@@ -1,6 +1,11 @@
 # Pre-Multiplied Alpha
-Pre-Multiplied alpha blend is a blend mode has been around for a long time, but it seems to be re-discovered every few years.
+Pre-Multiplied alpha blend is a blend mode has been around for a long time, but it seems to be re-discovered every few years. 
 
+This article focuses on using pre-multiplied alpha to batch a lot of blending modes together. This batching has become very important in modern famerate sensitive applications like VR on mobile. 
+
+[![VR Optimiaztion](https://img.youtube.com/vi/belVA1C013A/0.jpg)](https://www.youtube.com/watch?v=belVA1C013A "Unity max performance")
+
+## Introduction
 Typically, the primary reason to  use pre-multiplied alpha is to get rid of black outlines when rendering.
 
 For example, if you are rendering some leaves, you have an alpha channel indicating the leaf edges.
@@ -20,10 +25,13 @@ Most games resolve this by having artists fill in these background areas with a 
 ![](Images/BlendPreMul.png) 
 
 
-
 ```
 Tip: The DXT1A texture compression format was designed for use with pre-multiplied alpha.
 ```
+
+By using pre-multiplied alpha you also resolve issues with color bleeding in mip map generation: https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre
+
+There are some disadvantages of pre-multiplied blending (eg. it is a lossy operation on the color) but in general, it should be the default blending mode. See the attached links for further discussion. 
 
 ## The three in one blend mode
 
@@ -39,7 +47,7 @@ There are three main blend modes used in games:
 All three blending modes can be used as the pre-multiply blend mode by pre-processing the textures.
 - Additive - Set alpha to zero.
 - Alpha Blend - Multiply the color by the alpha value.
-- Multiply - Store (1 - color) in the alpha channel, then set color to black. 
+- Multiply - Limited to greyscale multiply. Store (1 - red) in the alpha channel, then set color to black. 
 
 Then at runtime, the blend mode can be set to (1, 1 - alpha). This is the blend mode code for OpenGL:
 ```
@@ -51,27 +59,6 @@ glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 Tip: The multiply blend mode only supports a grey scale value when using pre-multiplied alpha.
 By exporting two colors and doing multiply+add as the blend mode would support the full multiply blend mode.
 You need "Dual Source Blending" support for this (eg. GL_ARB_blend_func_extended)
-```
-
-## Reducing overdraw with Pre-Multiplied Alpha
-
-Another neat trick with pre-multiplied alpha is that if you have overlapping textures that are in known positions, you can pre-process them all down to one texture.
-
-For example, if you have a smoke particle effect, you could add sparks to the smoke textures and render them for free.
-
-**Using pre-multiplied blending you can effectively vary the blend mode per texel in the texture!**
-
-Another example is if you have a head up display UI in the game made up of different blended elements. 
-
-| ![](Images/Blend.png) | + | ![](Images/Additive.png) | + |![](Images/Multiply.png) | = | ![](Images/Bam.png) | 
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| *Blend texture* | | *Additive texture* | | *Inverse multiply texture* | | *Combined texture* |
-
-See the Tools for an example combining tool.
-
-```
-Tip: There is no limit to the number of textures you can combine, 
-but you may start getting artifacts unless the textures and destination buffer is HDR.
 ```
 
 ## Reducing draw calls/state changes with Pre-Multiplied Alpha
@@ -88,6 +75,28 @@ By switching to pre-multiplied blend mode for all particle effects, and entire s
 | ![](Images/MultipleBlendPFX.png) | 
 |:--:| 
 | *An example PFX using multiple blend modes. Left is switching blend mode, right is using pre-multiplied blending* |
+
+
+## Reducing overdraw with Pre-Multiplied Alpha
+
+Another neat trick with pre-multiplied alpha is that if you have overlapping textures that are in known positions, you can pre-process them all down to one texture.
+
+For example, if you have flipbook animation of a spinning coin, you can add a glow additive effect on top for free. Or if you have a smoke particle effect, you could add sparks to the smoke textures and render them for free.
+
+**Using pre-multiplied blending you can effectively vary the blend mode per texel in the texture!**
+
+Another example is if you have a head up display UI in the game made up of different blended elements. 
+
+| ![](Images/Blend.png) | + | ![](Images/Additive.png) | + |![](Images/Multiply.png) | = | ![](Images/Bam.png) | 
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| *Blend texture* | | *Additive texture* | | *Inverse multiply texture* | | *Combined texture* |
+
+See the Tools for an example combining tool.
+
+```
+Tip: There is no limit to the number of textures you can combine, 
+but you may start getting artifacts unless the textures and destination buffer is HDR.
+```
 
 
 ## Tools
@@ -151,6 +160,9 @@ Why pre-multiply blend mode should be used in mip map generation:
 https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre
 
 http://www.adriancourreges.com/blog/2017/05/09/beware-of-transparent-pixels/
+
+https://blogs.msdn.microsoft.com/shawnhar/2009/11/06/premultiplied-alpha/
+
 
 
 
